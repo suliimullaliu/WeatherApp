@@ -22,16 +22,54 @@ namespace WeatherApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly String apiKey = "8e879e34ce13e3d617a82f50b3190755";
+        private readonly string apiKey = "8e879e34ce13e3d617a82f50b3190755";
 
-        private String requestUrl = "https://api.openweathermap.org/data/2.5/weather";
+        private string requestUrl = "https://api.openweathermap.org/data/2.5/weather";
+        private string finalImage;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            UpdateUI("Zschopau");
+        }
+
+        public void UpdateUI(String City)
+        {
+            string finalImage = "sun.png";
+
+            WeatherMapResponse Result = GetWeatherData(City);
+            string currentWeather = Result.weather[0].main.ToLower();
+
+
+            if (currentWeather.Contains("cloud"))
+            {
+                finalImage = "Cloud.png";
+            }
+            else if (currentWeather.Contains("rain"))
+            {
+                finalImage = "Rain.png";
+            }
+            else if (currentWeather.Contains("snow"))
+            {
+                finalImage = "Snow.png";
+            }
+
+            imageBackground.ImageSource = new BitmapImage(new Uri("images/" + finalImage, UriKind.Relative));
+
+
+            labelTemperature.Content = Result.main.temp.ToString("F0") + "°C";
+            labelInfo.Content = Result.weather[0].main;
+        }
+
+
+        public WeatherMapResponse GetWeatherData(String city)
+        {
+
             HttpClient httpClient = new HttpClient();
 
-            var stadt = "Zschopau";
-            var finalUri = requestUrl + "?q="+stadt+"&appid=" + apiKey+"&units=metric";
+           
+            var finalUri = requestUrl + "?q=" + city + "&appid=" + apiKey + "&units=metric";
 
             HttpResponseMessage httpResponse = httpClient.GetAsync(finalUri).Result;
 
@@ -39,10 +77,17 @@ namespace WeatherApp
 
             WeatherMapResponse weatherMapResponse = JsonConvert.DeserializeObject<WeatherMapResponse>(httpResponse.Content.ReadAsStringAsync().Result);
 
-            Console.WriteLine(response);
-
-            
+            return weatherMapResponse;
 
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string query = TextBoxQuery.Text;
+            UpdateUI(query);
+        }
+
     }
+
+    
 }

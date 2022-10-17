@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WeatherApp
 {
-     class Main
+     public class Main
     {
         public float temp;
     }

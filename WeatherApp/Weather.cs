@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WeatherApp
 {
-    class Weather
+    public class Weather
     {
         public int id;
         public string main;
